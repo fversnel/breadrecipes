@@ -84,9 +84,6 @@
                {:amount amount}))]))
    recipe))
 
-;; TODO Format entire recipe
-
-
 (defn run [opts]
   (println "Beschikbare recepten met"
            (grams->str (:total-flour-in-grams opts))
