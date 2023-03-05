@@ -1,7 +1,7 @@
 {:org.fversnel.breadrecipes
  [{:name "Volkoren brood obv. poolish"
    :flour 2/3
-   :water 75/100
+   :water 7/10
    :yeast 5/1000
    :salt 16/1000
 
@@ -12,7 +12,7 @@
 
   {:name "Volkoren brood obv. sponge"
    :flour 1/2
-   :water 75/100
+   :water 7/10
    :yeast 5/1000
    :salt 16/1000
 

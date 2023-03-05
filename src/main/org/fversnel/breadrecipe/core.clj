@@ -17,50 +17,49 @@
    :preferment/water '(* :preferment/water :preferment/flour)
    :preferment/yeast '(* :preferment/yeast :preferment/flour)})
 
-(defn resolve-amount [recipe x]
-  (let [resolve-operator
-        {'+ +
-         '- -
-         '* *
-         '/ /}]
+(defn resolve-amount [recipe ingredient x]
+  (cond
+    (number? x)
+    x
 
-    (cond
-      (list? x)
-      (let [[operator base-value rest-formula] x
+    (keyword? x)
+    (if-let [proportion (x proportions->formula)]
+      (resolve-amount recipe x proportion)
+      (get recipe x 0))
 
-            operator (resolve-operator operator)
-            ;; If base-value is a formula, process it recursively
-            base-value (if (list? base-value)
-                         (resolve-amount recipe base-value)
-                         (get recipe base-value 0))
-            rest-formula (resolve-amount recipe rest-formula)]
-        (operator base-value (resolve-amount recipe rest-formula)))
+    (list? x)
+    (let [formula (map
+                   #(if (= % ingredient)
+                      (get recipe % 0)
+                      (resolve-amount recipe ingredient %))
+                   x)]
+      (eval formula))
 
-      (number? x)
-      x
+    :else
+    x))
 
-      (keyword? x)
-      (if-let [proportion (get proportions->formula x)]
-        (resolve-amount recipe proportion)
-        (get recipe x 0)))))
-
-(defn ->percentage
-  [amount]
+(defn ->percentage [amount]
   (str (format "%.1f" (* (float amount) 100)) "%"))
 
 (defn grams->str [amount]
   (str (format "%.1f" (float amount)) "g"))
 
 (defn format-recipe [recipe]
-  (map
-   (fn [[type description convert-amount]]
-     (let [{:keys [proportion amount]} (type recipe)]
-       (str description
-            ": "
-            (convert-amount amount)
-            (when proportion
-              (str " (" (->percentage proportion) ")"))
-            \newline)))
+  (transduce
+
+   (comp 
+    (map
+     (fn [[type description convert-amount]]
+       (let [{:keys [proportion amount]} (type recipe)]
+         (str description
+              ": "
+              (convert-amount amount)
+              (when proportion
+                (str " (" (->percentage proportion) ")"))))))
+    (interpose \newline))
+
+   str
+
    [[:name "Naam" str]
 
     [:flour "Meel" grams->str]
@@ -78,7 +77,7 @@
    {}
    (map (fn [[ingredient proportion]]
           [ingredient
-           (let [amount (resolve-amount recipe ingredient)]
+           (let [amount (resolve-amount recipe ingredient ingredient)]
              (if (number? proportion)
                {:proportion proportion
                 :amount amount}
@@ -89,15 +88,16 @@
 
 
 (defn run [opts]
-  (println "Beschikbare recepten met" 
-           (grams->str (:total-flour-in-grams opts)) 
+  (println "Beschikbare recepten met"
+           (grams->str (:total-flour-in-grams opts))
            "meel:"
            \newline)
   (let [resolve-recipe (fn [recipe]
                          (resolve-recipe (merge opts recipe)))
-        
+
+        ;; TODO As transduction
         converted-recipes
         (map
-         (comp format-recipe resolve-recipe)
+         (comp (fn [x] (str \newline x)) format-recipe resolve-recipe)
          (:org.fversnel.breadrecipes recipes))]
     (run! println converted-recipes)))
