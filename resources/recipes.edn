@@ -1,4 +1,14 @@
-{:org.fversnel.breadrecipes
+{:org.fversnel.breadrecipes/proportions
+ {:flour (* :flour :total-flour-in-grams)
+  :water (- (* :water :total-flour-in-grams) :preferment/water)
+  :yeast (* :yeast :total-flour-in-grams)
+  :salt (* :salt :total-flour-in-grams)
+
+  :preferment/flour (* :preferment/flour :total-flour-in-grams)
+  :preferment/water (* :preferment/water :preferment/flour)
+  :preferment/yeast (* :preferment/yeast :preferment/flour)}
+ 
+ :org.fversnel.breadrecipes/recipes
  [{:name "Volkoren brood met gist"
    :flour 1
    :water 7/10

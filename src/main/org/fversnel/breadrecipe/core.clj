@@ -2,20 +2,16 @@
   (:require [clojure.java.io :as io]
             [clojure.edn :as edn]))
 
-(def recipes
+(def source
   (edn/read-string
    (slurp
     (io/resource "recipes.edn"))))
 
-(def proportions->formula
-  {:flour '(* :flour :total-flour-in-grams)
-   :water '(- (* :water :total-flour-in-grams) :preferment/water)
-   :yeast '(* :yeast :total-flour-in-grams)
-   :salt '(* :salt :total-flour-in-grams)
+(def proportions->formula 
+  (:org.fversnel.breadrecipes/proportions source))
 
-   :preferment/flour '(* :preferment/flour :total-flour-in-grams)
-   :preferment/water '(* :preferment/water :preferment/flour)
-   :preferment/yeast '(* :preferment/yeast :preferment/flour)})
+(def recipes
+  (:org.fversnel.breadrecipes/recipes source))
 
 (defn resolve-amount [recipe ingredient x]
   (cond
@@ -33,7 +29,7 @@
                      '* *
                      '/ /}
                     (first x))
-          
+
           arguments (map
                      #(if (= % ingredient)
                         (get recipe % 0)
@@ -54,7 +50,7 @@
   (transduce
 
    (comp
-    (filter 
+    (filter
      (fn [[type _ _]]
        (contains? recipe type)))
     (map
@@ -94,19 +90,16 @@
    recipe))
 
 (defn run [opts]
-  (println "Beschikbare recepten met"
-           (grams->str (:total-flour-in-grams opts))
-           "meel:"
-           \newline)
-  (let [resolve-recipe (fn [recipe]
-                         (resolve-recipe (merge opts recipe)))
-
-        converted-recipes
+  (let [converted-recipes
         (transduce
-         (comp 
-          (map resolve-recipe)
+         (comp
+          (map (fn [recipe] (resolve-recipe (merge opts recipe))))
           (map format-recipe)
           (interpose (str \newline \newline)))
-          str
-          (:org.fversnel.breadrecipes recipes))]
+         str
+         recipes)]
+    (println "Beschikbare recepten met"
+             (grams->str (:total-flour-in-grams opts))
+             "meel:"
+             \newline)
     (println converted-recipes)))
