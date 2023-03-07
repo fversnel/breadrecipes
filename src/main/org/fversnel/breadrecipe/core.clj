@@ -23,17 +23,23 @@
     x
 
     (keyword? x)
-    (if-let [proportion (x proportions->formula)]
+    (if-let [proportion (proportions->formula x)]
       (resolve-amount recipe x proportion)
       (get recipe x 0))
 
     (list? x)
-    (let [formula (map
-                   #(if (= % ingredient)
-                      (get recipe % 0)
-                      (resolve-amount recipe ingredient %))
-                   x)]
-      (eval formula))
+    (let [operator ({'+ +
+                     '- -
+                     '* *
+                     '/ /}
+                    (first x))
+          
+          arguments (map
+                     #(if (= % ingredient)
+                        (get recipe % 0)
+                        (resolve-amount recipe ingredient %))
+                     (rest x))]
+      (apply operator arguments))
 
     :else
     x))
@@ -47,7 +53,10 @@
 (defn format-recipe [recipe]
   (transduce
 
-   (comp 
+   (comp
+    (filter 
+     (fn [[type _ _]]
+       (contains? recipe type)))
     (map
      (fn [[type description convert-amount]]
        (let [{:keys [proportion amount]} (type recipe)]
@@ -92,9 +101,12 @@
   (let [resolve-recipe (fn [recipe]
                          (resolve-recipe (merge opts recipe)))
 
-        ;; TODO As transduction
         converted-recipes
-        (map
-         (comp (fn [x] (str \newline x)) format-recipe resolve-recipe)
-         (:org.fversnel.breadrecipes recipes))]
-    (run! println converted-recipes)))
+        (transduce
+         (comp 
+          (map resolve-recipe)
+          (map format-recipe)
+          (interpose (str \newline \newline)))
+          str
+          (:org.fversnel.breadrecipes recipes))]
+    (println converted-recipes)))

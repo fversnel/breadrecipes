@@ -1,5 +1,11 @@
 {:org.fversnel.breadrecipes
- [{:name "Volkoren brood obv. poolish"
+ [{:name "Volkoren brood met gist"
+   :flour 1
+   :water 7/10
+   :yeast 1/100
+   :salt 16/1000}
+  
+  {:name "Volkoren brood obv. poolish"
    :flour 2/3
    :water 7/10
    :yeast 5/1000
