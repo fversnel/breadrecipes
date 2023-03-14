@@ -1,25 +1,82 @@
-{:org.fversnel.breadrecipes/proportions
- {:flour (* :flour :total-flour-in-grams)
-  :water (- (* :water :total-flour-in-grams) :preferment/water)
-  :yeast (* :yeast :total-flour-in-grams)
-  :salt (* :salt :total-flour-in-grams)
+{:org.fversnel.breadrecipes/metadata
+ [[:name 
+   {:name "Naam"}]
+  
+  [:total-flour-in-grams
+   {:name "Totale hoeveelheid meel"
+    :proportion-formula (* :total-flour-in-grams 1)
+    :unit :grams}]
+  
+  [:flour
+   {:name "Meel"
+    :proportion-formula (* :flour :total-flour-in-grams)
+    :unit :grams}]
 
-  :preferment/flour (* :preferment/flour :total-flour-in-grams)
-  :preferment/water (* :preferment/water :preferment/flour)
-  :preferment/yeast (* :preferment/yeast :preferment/flour)}
- 
+  [:flour/white
+   {:name "Bloem"
+    :proportion-formula (* :flour/white :flour)
+    :unit :grams}]
+
+  [:flour/whole-wheat
+   {:name "Volkoren meel"
+    :proportion-formula (* :flour/whole-wheat :flour)
+    :unit :grams}]
+
+  [:water
+   {:name "Water"
+    :proportion-formula (- (* :water :total-flour-in-grams) :preferment/water)
+    :unit :grams}]
+
+  [:yeast
+   {:name "Gist"
+    :proportion-formula (* :yeast :total-flour-in-grams)
+    :unit :grams}]
+
+  [:salt
+   {:name "Zout"
+    :proportion-formula (* :salt :total-flour-in-grams)
+    :unit :grams}]
+
+  [:preferment/type
+   {:name "Preferment type"}]
+
+  [:preferment/flour
+   {:name "Preferment meel"
+    :proportion-formula (* :preferment/flour :total-flour-in-grams)
+    :unit :grams}]
+
+  [:preferment.flour/white
+   {:name "Preferment bloem"
+    :proportion-formula (* :preferment.flour/white :preferment/flour)
+    :unit :grams}]
+
+  [:preferment.flour/whole-wheat
+   {:name "Preferment volkoren meel"
+    :proportion-formula (* :preferment.flour/whole-wheat :preferment/flour)
+    :unit :grams}]
+
+  [:preferment/water
+   {:name "Preferment water"
+    :proportion-formula (* :preferment/water :preferment/flour)
+    :unit :grams}]
+
+  [:preferment/yeast
+   {:name "Preferment gist"
+    :proportion-formula (* :preferment/yeast :preferment/flour)
+    :unit :grams}]]
+
  :org.fversnel.breadrecipes/recipes
  [{:name "Volkoren brood met gist"
    :flour 1
    :water 7/10
    :yeast 1/100
-   :salt 16/1000}
-  
+   :salt 20/1000}
+
   {:name "Volkoren brood obv. poolish"
    :flour 2/3
    :water 7/10
    :yeast 5/1000
-   :salt 16/1000
+   :salt 20/1000
 
    :preferment/type :poolish
    :preferment/flour 1/3
@@ -30,7 +87,7 @@
    :flour 1/2
    :water 7/10
    :yeast 5/1000
-   :salt 16/1000
+   :salt 20/1000
 
    :preferment/type :sponge
    :preferment/flour 1/2
