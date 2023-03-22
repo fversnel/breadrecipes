@@ -1,40 +1,46 @@
 {:org.fversnel.breadrecipes/metadata
- [[:name 
+ [[:name
    {:name "Naam"}]
-  
+
   [:total-flour-in-grams
    {:name "Totale hoeveelheid meel"
     :proportion-formula (* :total-flour-in-grams 1)
     :unit :grams}]
-  
+
   [:flour
    {:name "Meel"
     :proportion-formula (* :flour :total-flour-in-grams)
+    :percentage? true
     :unit :grams}]
 
   [:flour/white
    {:name "Bloem"
     :proportion-formula (* :flour/white :flour)
+    :percentage? true
     :unit :grams}]
 
   [:flour/whole-wheat
    {:name "Volkoren meel"
     :proportion-formula (* :flour/whole-wheat :flour)
+    :percentage? true
     :unit :grams}]
 
   [:water
    {:name "Water"
     :proportion-formula (- (* :water :total-flour-in-grams) :preferment/water)
+    :percentage? true
     :unit :grams}]
 
   [:yeast
    {:name "Gist"
     :proportion-formula (* :yeast :total-flour-in-grams)
+    :percentage? true
     :unit :grams}]
 
   [:salt
    {:name "Zout"
     :proportion-formula (* :salt :total-flour-in-grams)
+    :percentage? true
     :unit :grams}]
 
   [:preferment/type
@@ -43,26 +49,31 @@
   [:preferment/flour
    {:name "Preferment meel"
     :proportion-formula (* :preferment/flour :total-flour-in-grams)
+    :percentage? true
     :unit :grams}]
 
   [:preferment.flour/white
    {:name "Preferment bloem"
     :proportion-formula (* :preferment.flour/white :preferment/flour)
+    :percentage? true
     :unit :grams}]
 
   [:preferment.flour/whole-wheat
    {:name "Preferment volkoren meel"
     :proportion-formula (* :preferment.flour/whole-wheat :preferment/flour)
+    :percentage? true
     :unit :grams}]
 
   [:preferment/water
    {:name "Preferment water"
     :proportion-formula (* :preferment/water :preferment/flour)
+    :percentage? true
     :unit :grams}]
 
   [:preferment/yeast
    {:name "Preferment gist"
     :proportion-formula (* :preferment/yeast :preferment/flour)
+    :percentage? true
     :unit :grams}]]
 
  :org.fversnel.breadrecipes/recipes

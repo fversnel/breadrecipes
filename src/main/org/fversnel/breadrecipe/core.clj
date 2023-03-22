@@ -1,6 +1,7 @@
 (ns org.fversnel.breadrecipe.core
   (:require [clojure.java.io :as io]
-            [clojure.edn :as edn]))
+            [clojure.edn :as edn]
+            [clojure.walk :as walk :refer [postwalk]]))
 
 (def source
   (edn/read-string
@@ -8,56 +9,93 @@
     (io/resource "recipes.edn"))))
 
 (def recipe-metadata
-  (:org.fversnel.breadrecipes/metadata source))
+  (into
+   {}
+   (map-indexed
+    (fn [index [ingredient metadata]]
+      [ingredient
+       (assoc
+        metadata
+        :order index
+        :ingredient/type ingredient)]))
+   (:org.fversnel.breadrecipes/metadata source)))
 
-(def recipes
-  (:org.fversnel.breadrecipes/recipes source))
+(let [resolve-operator {'+ +
+                        '- -
+                        '* *
+                        '/ /}]
+  (defn resolve-amount [recipe {:keys [proportion-formula] :as ingredient}]
+    (letfn [(assoc-amount
+              [amount]
+              (assoc ingredient :amount amount))
 
-(defn resolve-amount
-  [recipe {:keys [ingredient proportion proportion-formula] :as part}]
-  (cond
-    (some? proportion-formula)
-    (comment
-      (cond
-        keyword? (recursive resolving formula)
-        number? identity
-        list? (loop)
-        ))
+            (keyword->proportion
+              [x]
+              (if (keyword? x)
+                (:proportion (recipe x))
+                x))
 
+            (expand-formula [ingredient-type x]
+              (cond
+                (= ingredient-type x)
+                x
 
-    
-    
-    )
+                (keyword? x)
+                (let [ingredient (recipe x)
+                      proportion-formula (:proportion-formula ingredient)]
+                  (if proportion-formula
+                    (expand-formula (:ingredient/type ingredient) proportion-formula)
+                    x))
 
+                :else
+                x))
 
+            (resolve-formula [x]
+              (if (sequential? x)
+                (let [[operator & arguments] x
+                      ;; Replace nil arguments with default values
+                      arguments (map (fn [argument]
+                                       (if (nil? argument)
+                                         (cond
+                                           (#{'+ '-} operator) 0
+                                           (#{'* '/} operator) 1)
+                                         argument))
+                                     arguments)]
+                  (apply (resolve-operator operator) arguments))
+                x))
 
+            (print-form [x] (println "form:" x) x)]
+      (if proportion-formula
+        (->>
+         proportion-formula
+         (postwalk (partial expand-formula (:ingredient/type ingredient)))
+         (postwalk keyword->proportion)
+        ;;  print-form
+         (postwalk resolve-formula)
+         assoc-amount)
 
-  (assoc
-   part
-   :amount
-   (if proportion-formula
-     (letfn [(resolve-formula [ingredient x]
-               (println "resolving formula" x)
-               (cond
-                 (= x ingredient)
-                 (:proportion (recipe ingredient))
+        ingredient))))
 
-                 (list? x)
-                 (let [operator ({'+ +
-                                  '- -
-                                  '* *
-                                  '/ /}
-                                 (first x))
-                       arguments (map resolve-formula (rest x))]
-                   (apply operator arguments))
+(defn expand-recipe [recipe]
+  (let [expanded-recipe
+        (into
+         {}
+         (map
+          (fn [[ingredient proportion-or-value]]
+            (let [metadata (recipe-metadata ingredient)]
+              [ingredient
+               (assoc
+                metadata
+                (if (contains? metadata :proportion-formula)
+                  :proportion
+                  :value)
+                proportion-or-value)])))
+         recipe)]
+    (->> (vals expanded-recipe)
+         (map (partial resolve-amount expanded-recipe))
+         (sort-by :order))))
 
-                 (number? x)
-                 x))]
-       (resolve-formula ingredient proportion-formula))
-
-     proportion)))
-
-(defn format-amount [unit amount]
+(defn format-amount [{:keys [unit amount]}]
   (condp = unit
     :grams
     (str (format "%.1f" (float amount)) "g")
@@ -67,54 +105,65 @@
 
     (str amount)))
 
+(defn format-value [{:keys [value]}]
+  (cond
+    (keyword? value) (name value)
+    :else value))
+
 (defn format-recipe [recipe]
   (transduce
 
    (comp
-    (filter
-     (fn [[type _]]
-       (contains? recipe type)))
     (map
-     (fn [[_ {:keys [name proportion amount unit]}]]
+     (fn [{:keys [name percentage? proportion] :as ingredient}]
        (str name
             ": "
-            (format-amount unit amount)
-            (when proportion
-              (str " (" (format-amount :percentage proportion) ")")))))
+            (if (:amount ingredient)
+              (format-amount ingredient)
+              (format-value ingredient))
+            (when percentage?
+              (str
+               " ("
+               (format-amount {:unit :percentage :amount proportion})
+               ")")))))
+
     (interpose \newline))
 
    str
 
-   recipe-metadata))
+   recipe))
 
-(defn resolve-recipe [recipe]
-  (let [recipe-metadata (into {} recipe-metadata)
-        recipe (into
-                {}
-                (map
-                 (fn [[ingredient proportion]]
-                   (let [metadata (ingredient recipe-metadata)]
-                     [ingredient
-                      (assoc
-                       metadata
-                       :ingredient ingredient
-                       :proportion proportion)])))
-                recipe)]
-    (println recipe)
 
-    (update-vals recipe (partial resolve-amount recipe))))
+
+
+;; (defn resolve-recipe [recipe]
+;;   (let [recipe-metadata (into {} recipe-metadata)
+;;         recipe (into
+;;                 {}
+;;                 (map
+;;                  (fn [[ingredient proportion]]
+;;                    (let [metadata (ingredient recipe-metadata)]
+;;                      [ingredient
+;;                       (assoc
+;;                        metadata
+;;                        :ingredient ingredient
+;;                        :proportion proportion)])))
+;;                 recipe)]
+;;     (println recipe)
+
+;;     (update-vals recipe (partial resolve-amount recipe))))
 
 (defn run [opts]
   (let [converted-recipes
         (transduce
          (comp
-          (map (fn [recipe] (resolve-recipe (merge opts recipe))))
+          (map (fn [recipe] (expand-recipe (merge opts recipe))))
           (map format-recipe)
           (interpose (str \newline \newline)))
          str
-         recipes)]
+         (:org.fversnel.breadrecipes/recipes source))]
     (println "Beschikbare recepten met"
-             (format-amount :grams (:total-flour-in-grams opts))
+             (format-amount {:unit :grams :amount (:total-flour-in-grams opts)})
              "meel:"
              \newline)
     (println converted-recipes)))
