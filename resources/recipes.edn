@@ -1,6 +1,9 @@
 {:org.fversnel.breadrecipes/metadata
  [[:name
    {:name "Naam"}]
+  
+  [:description
+   {:name "Omschrijving"}]
 
   [:total-flour-in-grams
    {:name "Totale hoeveelheid meel"
@@ -83,7 +86,21 @@
    :yeast 1/100
    :salt 20/1000}
 
-  {:name "Volkoren brood obv. poolish"
+  {:name "Volkoren brood minder gist"
+   :description "Langere fermentatie omdat er minder gist in zit"
+   :flour 1
+   :water 7/10
+   :yeast 1/200
+   :salt 20/1000}
+
+  {:name "Volkoren brood minder gist, meer hydratatie"
+   :description "Meer water en minder gist voor langere fermentatie en meer smaak"
+   :flour 1
+   :water 75/100
+   :yeast 1/200
+   :salt 20/1000}
+
+  {:name "Volkoren brood obv. 1/3 poolish"
    :flour 2/3
    :water 7/10
    :yeast 5/1000
@@ -94,7 +111,7 @@
    :preferment/water 1
    :preferment/yeast 1/1000}
 
-  {:name "Volkoren brood obv. sponge"
+  {:name "Volkoren brood obv. 1/2 sponge"
    :flour 1/2
    :water 7/10
    :yeast 5/1000
