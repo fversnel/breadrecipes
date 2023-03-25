@@ -64,7 +64,7 @@
                   (apply (resolve-operator operator) arguments))
                 x))
 
-            (print-form [x] (println "form:" x) x)]
+            (print-form [x] (println (:ingredient/type ingredient) "form:" x) x)]
       (if proportion-formula
         (->>
          proportion-formula
@@ -88,7 +88,7 @@
                 metadata
                 (if (contains? metadata :proportion-formula)
                   :proportion
-                  :value)
+                  :amount)
                 proportion-or-value)])))
          recipe)]
     (->> (vals expanded-recipe)
@@ -100,15 +100,16 @@
     :grams
     (str (format "%.1f" (float amount)) "g")
 
+    :celcius
+    (str amount "°C")
+
+    :hours
+    (str amount "h")
+
     :percentage
     (str (format "%.1f" (float (* amount 100))) "%")
 
     (str amount)))
-
-(defn format-value [{:keys [value]}]
-  (cond
-    (keyword? value) (name value)
-    :else value))
 
 (defn format-recipe [recipe]
   (transduce
@@ -118,9 +119,7 @@
      (fn [{:keys [name percentage? proportion] :as ingredient}]
        (str name
             ": "
-            (if (:amount ingredient)
-              (format-amount ingredient)
-              (format-value ingredient))
+            (format-amount ingredient)
             (when percentage?
               (str
                " ("
@@ -133,26 +132,6 @@
 
    recipe))
 
-
-
-
-;; (defn resolve-recipe [recipe]
-;;   (let [recipe-metadata (into {} recipe-metadata)
-;;         recipe (into
-;;                 {}
-;;                 (map
-;;                  (fn [[ingredient proportion]]
-;;                    (let [metadata (ingredient recipe-metadata)]
-;;                      [ingredient
-;;                       (assoc
-;;                        metadata
-;;                        :ingredient ingredient
-;;                        :proportion proportion)])))
-;;                 recipe)]
-;;     (println recipe)
-
-;;     (update-vals recipe (partial resolve-amount recipe))))
-
 (defn run [opts]
   (let [converted-recipes
         (transduce
@@ -162,8 +141,6 @@
           (interpose (str \newline \newline)))
          str
          (:org.fversnel.breadrecipes/recipes source))]
-    (println "Beschikbare recepten met"
-             (format-amount {:unit :grams :amount (:total-flour-in-grams opts)})
-             "meel:"
-             \newline)
+    (println "Beschikbare recepten:")
+    (println)
     (println converted-recipes)))

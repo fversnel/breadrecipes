@@ -1,13 +1,13 @@
 {:org.fversnel.breadrecipes/metadata
  [[:name
    {:name "Naam"}]
-  
+
   [:description
    {:name "Omschrijving"}]
 
   [:total-flour-in-grams
    {:name "Totale hoeveelheid meel"
-    :proportion-formula (* :total-flour-in-grams 1)
+    :proportion-formula :total-flour-in-grams
     :unit :grams}]
 
   [:flour
@@ -34,11 +34,9 @@
     :percentage? true
     :unit :grams}]
 
-  [:yeast
-   {:name "Gist"
-    :proportion-formula (* :yeast :total-flour-in-grams)
-    :percentage? true
-    :unit :grams}]
+  [:water/temperature
+   {:name "Water temperatuur"
+    :unit :celcius}]
 
   [:salt
    {:name "Zout"
@@ -46,78 +44,113 @@
     :percentage? true
     :unit :grams}]
 
+  [:yeast
+   {:name "Gist"
+    :proportion-formula (* :yeast :total-flour-in-grams)
+    :percentage? true
+    :unit :grams}]
+
   [:preferment/type
-   {:name "Preferment type"}]
+   {:name "Voordeeg type"}]
 
   [:preferment/flour
-   {:name "Preferment meel"
+   {:name "Voordeeg meel"
     :proportion-formula (* :preferment/flour :total-flour-in-grams)
     :percentage? true
     :unit :grams}]
 
   [:preferment.flour/white
-   {:name "Preferment bloem"
+   {:name "Voordeeg bloem"
     :proportion-formula (* :preferment.flour/white :preferment/flour)
     :percentage? true
     :unit :grams}]
 
   [:preferment.flour/whole-wheat
-   {:name "Preferment volkoren meel"
+   {:name "Voordeeg volkoren meel"
     :proportion-formula (* :preferment.flour/whole-wheat :preferment/flour)
     :percentage? true
     :unit :grams}]
 
   [:preferment/water
-   {:name "Preferment water"
+   {:name "Voordeeg water"
     :proportion-formula (* :preferment/water :preferment/flour)
     :percentage? true
     :unit :grams}]
 
   [:preferment/yeast
-   {:name "Preferment gist"
+   {:name "Voordeeg gist"
     :proportion-formula (* :preferment/yeast :preferment/flour)
     :percentage? true
-    :unit :grams}]]
+    :unit :grams}]
+
+  [:bulk.fermentation/time
+   {:name "Bulkrijs tijd"
+    :unit :hours}]
+
+  [:bulk.fermentation/temperature
+   {:name "Bulkrijs temperatuur"
+    :unit :celcius}]
+
+  [:proofing/time
+   {:name "Bolrijs tijd"
+    :unit :hours}]
+
+  [:proofing/temperature
+   {:name "Bolrijs temperatuur"
+    :unit :celcius}]]
 
  :org.fversnel.breadrecipes/recipes
  [{:name "Volkoren brood met gist"
    :flour 1
    :water 7/10
-   :yeast 1/100
-   :salt 20/1000}
+   :salt 20/1000
+   :yeast 1/100}
 
   {:name "Volkoren brood minder gist"
    :description "Langere fermentatie omdat er minder gist in zit"
    :flour 1
    :water 7/10
-   :yeast 1/200
-   :salt 20/1000}
+   :salt 20/1000
+   :yeast 1/200}
 
   {:name "Volkoren brood minder gist, meer hydratatie"
    :description "Meer water en minder gist voor langere fermentatie en meer smaak"
    :flour 1
    :water 75/100
-   :yeast 1/200
-   :salt 20/1000}
+   :salt 20/1000
+   :yeast 1/200}
+
+  {:name "Brood met hoge hydratatie, avond preparatie, s'ochtends bakken"
+   :flour 1
+   :flour/white 8/10
+   :flour/whole-wheat 2/10
+   :water 76/100
+   :water/temperature "32-35"
+   :salt 22/1000
+   :yeast 6/1000
+   :bulk.fermentation/time 3
+   :bulk.fermentation/temperature 21
+   :proofing/temperature 7
+   :proofing/time "10-14"}
 
   {:name "Volkoren brood obv. 1/3 poolish"
    :flour 2/3
    :water 7/10
-   :yeast 5/1000
    :salt 20/1000
+   :yeast 5/1000
 
-   :preferment/type :poolish
+   :preferment/type "Poolish"
    :preferment/flour 1/3
    :preferment/water 1
-   :preferment/yeast 1/1000}
+   :preferment/yeast 2/1000}
 
   {:name "Volkoren brood obv. 1/2 sponge"
    :flour 1/2
    :water 7/10
-   :yeast 5/1000
    :salt 20/1000
+   :yeast 5/1000
 
-   :preferment/type :sponge
+   :preferment/type "Sponge"
    :preferment/flour 1/2
    :preferment/water 75/100
-   :preferment/yeast 1/1000}]}
+   :preferment/yeast 2/1000}]}
