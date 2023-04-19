@@ -34,10 +34,6 @@
     :percentage? true
     :unit :grams}]
 
-  [:water/temperature
-   {:name "Water temperatuur"
-    :unit :celcius}]
-
   [:salt
    {:name "Zout"
     :proportion-formula (* :salt :total-flour-in-grams)
@@ -122,14 +118,12 @@
 
   {:name "Brood met hoge hydratatie, avond preparatie, s'ochtends bakken"
    :flour 1
-   :flour/white 8/10
-   :flour/whole-wheat 2/10
-   :water 76/100
-   :water/temperature "32-35"
+   :flour/whole-wheat 1
+   :water 85/100
    :salt 22/1000
    :yeast 6/1000
-   :bulk.fermentation/time 3
-   :bulk.fermentation/temperature 21
+   :bulk.fermentation/time "2,5-3"
+   :bulk.fermentation/temperature "24-25"
    :proofing/temperature 7
    :proofing/time "10-14"}
 

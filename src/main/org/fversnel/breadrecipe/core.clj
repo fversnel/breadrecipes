@@ -138,7 +138,7 @@
          (comp
           (map (fn [recipe] (expand-recipe (merge opts recipe))))
           (map format-recipe)
-          (interpose (str \newline \newline)))
+          (interpose (str \newline \newline "---------------------------------" \newline)))
          str
          (:org.fversnel.breadrecipes/recipes source))]
     (println "Beschikbare recepten:")
