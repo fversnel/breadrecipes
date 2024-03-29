@@ -34,12 +34,6 @@
     :percentage? true
     :unit :grams}]
 
-  [:levain/white
-   {:name "Zuurdesem (wit)"
-    :proportion-formula (* :levain/white :total-flour-in-grams)
-    :percentage? true
-    :unit :grams}]
-
   [:water
    {:name "Water"
     :proportion-formula (- (* :water :total-flour-in-grams)
@@ -201,10 +195,10 @@
   ;; 67g flour per Brot
   {:name                          "Brötchen"
    :flour                         1
-   :flour/white                   0.37
-   :flour/whole-wheat             0.63
-   :levain/white                  20/100
-   :water                         65/100
+   :flour/white                   30/100
+   :flour/whole-wheat             1/2
+   :levain                        40/100
+   :water                         45/100
    :salt                          20/1000
    :bulk.fermentation/time        "2,5-3"
    :bulk.fermentation/temperature "24-25"
