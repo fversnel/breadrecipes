@@ -138,7 +138,7 @@
    :flour/whole-wheat             1
    :water                         85/100
    :salt                          20/1000
-   :yeast                         6/1000
+   :yeast                         2/1000
    :bulk.fermentation/time        "2,5-3"
    :bulk.fermentation/temperature "24-25"
    :proofing/temperature          7
