@@ -20,61 +20,56 @@
         :ingredient/type ingredient)]))
    (:org.fversnel.breadrecipes/metadata source)))
 
-(let [resolve-operator {'+ +
-                        '- -
-                        '* *
-                        '/ /}]
-  (defn resolve-amount [recipe {:keys [proportion-formula] :as ingredient}]
-    (letfn [(assoc-amount
-              [amount]
-              (assoc ingredient :amount amount))
+(defn resolve-amount [recipe {:keys [proportion-formula] :as ingredient}]
+  (letfn [(assoc-amount
+            [amount]
+            (assoc ingredient :amount amount))
 
-            (keyword->proportion
-              [x]
-              (if (keyword? x)
-                (:proportion (recipe x))
-                x))
+          (keyword->proportion
+            [x]
+            (if (keyword? x)
+              (:proportion (recipe x))
+              x))
 
-            (expand-formula [ingredient-type x]
-              (cond
-                (= ingredient-type x)
-                x
+          (expand-formula [ingredient-type x]
+            (cond
+              (= ingredient-type x)
+              x
 
-                (keyword? x)
-                (let [ingredient (recipe x)
-                      proportion-formula (:proportion-formula ingredient)]
-                  (if proportion-formula
-                    (expand-formula (:ingredient/type ingredient) proportion-formula)
-                    x))
+              (keyword? x)
+              (let [ingredient (recipe x)
+                    proportion-formula (:proportion-formula ingredient)]
+                (if proportion-formula
+                  (expand-formula (:ingredient/type ingredient) proportion-formula)
+                  x))
 
-                :else
-                x))
+              :else
+              x))
 
-            (resolve-formula [x]
-              (if (sequential? x)
-                (let [[operator & arguments] x
+          (resolve-formula [x]
+            (if (sequential? x)
+              (let [[operator-symbol & arguments] x
+                    {:keys [operator default-value]}
+                    ({'+ {:operator + :default-value 0}
+                      '- {:operator - :default-value 0}
+                      '* {:operator * :default-value 1}
+                      '/ {:operator / :default-value 1}} operator-symbol)
                       ;; Replace nil arguments with default values
-                      arguments (map (fn [argument]
-                                       (if (nil? argument)
-                                         (cond
-                                           (#{'+ '-} operator) 0
-                                           (#{'* '/} operator) 1)
-                                         argument))
-                                     arguments)]
-                  (apply (resolve-operator operator) arguments))
-                x))
+                    arguments (map #(or % default-value) arguments)]
+                (apply operator arguments))
+              x))
 
-            (print-form [x] (println (:ingredient/type ingredient) "form:" x) x)]
-      (if proportion-formula
-        (->>
-         proportion-formula
-         (postwalk (partial expand-formula (:ingredient/type ingredient)))
-         (postwalk keyword->proportion)
+          (print-form [x] (println (:ingredient/type ingredient) "form:" x) x)]
+    (if proportion-formula
+      (->>
+       proportion-formula
+       (postwalk (partial expand-formula (:ingredient/type ingredient)))
+       (postwalk keyword->proportion)
         ;;  print-form
-         (postwalk resolve-formula)
-         assoc-amount)
+       (postwalk resolve-formula)
+       assoc-amount)
 
-        ingredient))))
+      ingredient)))
 
 (defn expand-recipe [recipe]
   (let [expanded-recipe

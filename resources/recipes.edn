@@ -28,6 +28,12 @@
     :percentage? true
     :unit :grams}]
 
+  [:flour/whole-rye
+   {:name "Volkoren rogge"
+    :proportion-formula (* :flour/whole-rye :flour)
+    :percentage? true
+    :unit :grams}]
+
   [:levain
    {:name "Zuurdesem"
     :proportion-formula (* :levain :total-flour-in-grams)
@@ -62,7 +68,7 @@
     :proportion-formula (* :oil/olive :total-flour-in-grams)
     :percentage? true
     :unit :grams}]
-  
+
   [:preferment/type
    {:name "Voordeeg type"}]
 
@@ -113,38 +119,7 @@
     :unit :celcius}]]
 
  :org.fversnel.breadrecipes/recipes
- [{:name  "Volkoren brood met gist"
-   :flour 1
-   :water 7/10
-   :salt  20/1000
-   :yeast 1/100}
-
-  {:name        "Volkoren brood minder gist"
-   :description "Langere fermentatie omdat er minder gist in zit"
-   :flour       1
-   :water       7/10
-   :salt        20/1000
-   :yeast       1/200}
-
-  {:name        "Volkoren brood minder gist, meer hydratatie"
-   :description "Meer water en minder gist voor langere fermentatie en meer smaak"
-   :flour       1
-   :water       75/100
-   :salt        20/1000
-   :yeast       1/200}
-
-  {:name                          "Brood met hoge hydratatie, koude narijs"
-   :flour                         1
-   :flour/whole-wheat             1
-   :water                         85/100
-   :salt                          20/1000
-   :yeast                         2/1000
-   :bulk.fermentation/time        "2,5-3"
-   :bulk.fermentation/temperature "24-25"
-   :proofing/temperature          7
-   :proofing/time                 "10-14"}
-
-  {:name                          "Brood met hoge hydratatie (+ levain), koude narijs"
+ [{:name                          "Brood met hoge hydratatie (+ levain), koude narijs"
    :flour                         1
    :flour/whole-wheat             1
    :levain                        20/100
@@ -192,15 +167,10 @@
    :proofing/time                 "2-3"
    :oil/olive                     10/100}
 
-  ;; 67g flour per Brot
-  {:name                          "Brötchen"
-   :flour                         1
-   :flour/white                   30/100
-   :flour/whole-wheat             1/2
-   :levain                        40/100
-   :water                         45/100
-   :salt                          20/1000
-   :bulk.fermentation/time        "2,5-3"
-   :bulk.fermentation/temperature "24-25"
-   :proofing/temperature          7
-   :proofing/time                 "10-14"}]}
+  {:name "Roggenbrood"
+   :flour 1
+   :flour/white 3/10
+   :flour/whole-rye 3/5
+   :water 90/100
+   :levain 2/10
+   :salt 16/1000}]}
