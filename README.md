@@ -1,3 +1,5 @@
+**Project was moved to: https://codeberg.org/fversnel/breadrecipes**
+
 Run:
 
 ```sh
